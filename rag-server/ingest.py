@@ -1,19 +1,18 @@
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext
+from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 
+from chunker import chunk_directory
+
 VAULT_PATH = "/vault/obsidian"
 
 def build_index():
 
-    documents = SimpleDirectoryReader(
-        VAULT_PATH,
-        recursive=True,
-        required_exts=[".md", ".qmd"],
-        exclude=[".obsidian"]
-    ).load_data()
+    # Use chunker instead of SimpleDirectoryReader
+    documents = chunk_directory(VAULT_PATH)
+    print(f"Total chunks: {len(documents)}")
 
     embed_model = HuggingFaceEmbedding(
         model_name="/models/BAAI/bge-base-zh-v1.5",
@@ -34,6 +33,23 @@ def build_index():
     client.create_collection(
         collection_name="obsidian_notes",
         vectors_config=VectorParams(size=768, distance=Distance.COSINE)
+    )
+
+    # Create payload indexes for metadata fields to enable filtering
+    client.create_payload_index(
+        collection_name="obsidian_notes",
+        field_name="metadata.source",
+        field_schema="keyword"
+    )
+    client.create_payload_index(
+        collection_name="obsidian_notes",
+        field_name="metadata.title",
+        field_schema="keyword"
+    )
+    client.create_payload_index(
+        collection_name="obsidian_notes",
+        field_name="metadata.heading_level",
+        field_schema="integer"
     )
 
     vector_store = QdrantVectorStore(
