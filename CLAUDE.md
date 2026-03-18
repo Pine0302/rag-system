@@ -78,3 +78,16 @@ curl -X POST "http://localhost:8000/query?q=你的问题"
 - **Collection name**: `obsidian_notes`
 - **Embedding dimension**: 768 (bge-base-zh-v1.5)
 - **Distance metric**: Cosine similarity
+
+## Docker Build Optimization
+
+To prevent "No space left on device" errors:
+
+1. Use `python:3.10-slim` base image in Dockerfile
+2. Pin dependency versions in requirements.txt (especially `torch==2.5.0`)
+3. Keep Docker image cache after first build - don't run `docker system prune`
+
+If disk space is full:
+```bash
+sudo docker system prune -a --volumes -f
+```

@@ -104,8 +104,20 @@ def chunk_file(file_path: Path, content: str) -> List[Document]:
             metadata['heading_level'] = len(chunk['headings'])
             metadata['top_heading'] = chunk['headings'][0] if chunk['headings'] else ''
 
+        # Build enhanced text with metadata for better embedding
+        header_path = ' > '.join(chunk['headings']) if chunk['headings'] else title
+        enhanced_text = f"""文档: {rel_path.name}
+
+标题路径: {header_path}
+
+标题: {title}
+
+内容:
+{chunk['content']}
+"""
+
         doc = Document(
-            text=chunk['content'],
+            text=enhanced_text,
             metadata=metadata,
             id_=f"{rel_path}_{i}"
         )
