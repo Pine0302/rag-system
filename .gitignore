@@ -1,0 +1,20 @@
+# Docker volumes (Qdrant data)
+qdrant_data/
+
+# IDE / Editor
+.claude/
+.codex/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# OpenSpec workflow (internal)
+openspec/
