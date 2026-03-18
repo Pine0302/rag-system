@@ -15,7 +15,7 @@ def build_index():
     print(f"Total chunks: {len(documents)}")
 
     embed_model = HuggingFaceEmbedding(
-        model_name="/models/BAAI/bge-base-zh-v1.5",
+        model_name="/models/BAAI/bge-m3",
         cache_folder="/models"
     )
 
@@ -32,7 +32,7 @@ def build_index():
 
     client.create_collection(
         collection_name="obsidian_notes",
-        vectors_config=VectorParams(size=768, distance=Distance.COSINE)
+        vectors_config=VectorParams(size=1024, distance=Distance.COSINE)
     )
 
     # Create payload indexes for metadata fields to enable filtering

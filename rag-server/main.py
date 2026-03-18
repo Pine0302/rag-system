@@ -21,9 +21,9 @@ def startup():
     global index
     global query_engine
 
-    print("Starting build_index...")
-    index = build_index()
-    print("build_index completed")
+    # Skip auto-build, run manually with:
+    # docker exec rag-server python -c "from ingest import build_index; build_index()"
+    print("Skipping build_index at startup (run manually)")
 
     print("Starting get_query_engine...")
     query_engine = get_query_engine()

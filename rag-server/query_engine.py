@@ -9,7 +9,7 @@ Settings.llm = None
 def get_query_engine():
 
     embed_model = HuggingFaceEmbedding(
-        model_name="/models/BAAI/bge-base-zh-v1.5",
+        model_name="/models/BAAI/bge-m3",
         cache_folder="/models"
     )
 
