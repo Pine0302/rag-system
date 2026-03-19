@@ -14,6 +14,10 @@ def build_index():
     documents = chunk_directory(VAULT_PATH)
     print(f"Total chunks: {len(documents)}")
 
+    if not documents:
+        print("No documents to index!")
+        return None
+
     embed_model = HuggingFaceEmbedding(
         model_name="/models/BAAI/bge-m3",
         cache_folder="/models"
@@ -57,12 +61,22 @@ def build_index():
         collection_name="obsidian_notes"
     )
 
-    storage_context = StorageContext.from_defaults(vector_store=vector_store)
-
-    index = VectorStoreIndex.from_documents(
-        documents,
-        embed_model=embed_model,
-        storage_context=storage_context
+    # Create index from vector store
+    index = VectorStoreIndex.from_vector_store(
+        vector_store,
+        embed_model=embed_model
     )
+
+    # Insert documents one by one
+    for i, doc in enumerate(documents):
+        index.insert(doc)
+        if (i + 1) % 50 == 0:
+            print(f"Indexed {i + 1}/{len(documents)} chunks")
+
+    print(f"Indexed {len(documents)} chunks total")
+
+    # Verify
+    info = client.get_collection("obsidian_notes")
+    print(f"Points in Qdrant: {info.points_count}")
 
     return index
